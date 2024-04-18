@@ -13,6 +13,7 @@
 # Project Profile #
 **/.idea
 es/config/.env
+es/config/http_ca.crt
 
 **/__pycache__
 
