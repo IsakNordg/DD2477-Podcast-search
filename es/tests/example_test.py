@@ -29,6 +29,7 @@ class TestExample(unittest.TestCase):
         self.assertEqual(response["_index"], self.configs["idx_name"])
 
     def test_search(self):
+        indexer.index_sample(self.client)
         es_results = searcher.search_sample(
             index=self.configs["idx_name"], query="Hello", es=self.client
         )
