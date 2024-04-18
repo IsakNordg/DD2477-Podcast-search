@@ -1,0 +1,10 @@
+# elasticsearch.yml
+
+idx_name: "podcast_index"
+
+username: "elastic"
+password: "eAEt8FOJEpmAM8c1zoiw"
+fingerprint: "d2d31e216fd3d3e5b6cc44ce96f86119795ad4c7b3eabe805187d3fd8b15d668"
+
+hosts: "https://localhost:9200/"
+http_crt: "http_ca.crt"

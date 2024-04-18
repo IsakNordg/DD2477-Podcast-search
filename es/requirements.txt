@@ -1,0 +1,2 @@
+PyYAML~=5.1.1
+elasticsearch~=8.13.0
