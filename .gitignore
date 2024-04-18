@@ -11,8 +11,8 @@
 *.rar
 
 # Project Profile #
-*.idea
-*.env
+**/.idea
+es/config/.env
 
 **/__pycache__
 

@@ -11,6 +11,7 @@ Description: This file defines Flask routes for handling HTTP requests.
 
 from flask import Blueprint, request, jsonify, render_template
 from .views import search_podcast
+from es.searcher import Searcher
 
 api = Blueprint('api', __name__)
 
@@ -26,7 +27,7 @@ def search():
 
     results = search_podcast(query)
 
-    print_es_results(results)
+    Searcher.print_es_results(results)
 
     return jsonify(results)
 
@@ -39,8 +40,3 @@ def page_not_found(e):
 @api.route('/')
 def home():
     return render_template("home.html")
-
-def print_es_results(results):
-    print("Search results:")
-    for hit in results:
-        print(hit)

@@ -16,6 +16,12 @@ class Searcher:
         pass
 
     @staticmethod
+    def print_es_results(results):
+        print("Search results: ")
+        for hit in results:
+            print(hit)
+
+    @staticmethod
     def search_sample(index, query, es=client):
         es_query = {
             "query": {
