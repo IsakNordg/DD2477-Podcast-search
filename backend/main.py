@@ -1,7 +1,7 @@
 # main.py
 
 from flask import Flask
-from app.routes import api
+from backend.app.routes import api
 
 # Create Flask application instance
 app = Flask(__name__)
