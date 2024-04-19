@@ -21,4 +21,4 @@ print("Indexing response:", response)
 # Search for sample data in Elasticsearch using the specified index and query.
 search_results = searcher.search_sample(index=index_name, query="Hello")
 # Print the search results.
-searcher.print_es_results(search_results)
+searcher.print_es_results(search_results["hits"]["hits"])
