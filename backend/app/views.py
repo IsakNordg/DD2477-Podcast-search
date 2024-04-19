@@ -9,16 +9,19 @@ Description: This file contains view functions that handle HTTP requests
              to a specific route defined in routes.py.
 """
 
-from es.searcher import searcher
+from es.searcher import Searcher
 from backend.config.config import configs
 
-def search_podcast(query):
+searcher = Searcher()
+
+def search_example(query):
     """
     Perform search in Elasticsearch for books with given query.
     """
+    print("New search query: ", query)
 
     # Perform search using Elasticsearch
-    es_results = searcher.search_sample(index=configs["idx_name"], body=query)
+    es_results = searcher.search_sample(index=configs["example_idx_name"], query=query)
 
     # Extract search results from Elasticsearch response
     results = [{'id': hit['_id'],
@@ -26,3 +29,6 @@ def search_podcast(query):
                 'content': hit['_source']['content']} for hit in es_results['hits']['hits']]
 
     return results
+
+def search_podcast(query):
+    pass
