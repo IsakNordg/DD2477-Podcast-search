@@ -22,6 +22,3 @@ class ESClient:
             basic_auth=(username, password),
             ca_certs=crt_path
         )
-
-
-client = ESClient()

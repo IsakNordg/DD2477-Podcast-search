@@ -1,3 +1,5 @@
 # settings.yml
 
-home: "home.html"
+HOME_PAGE: "home.html"
+STATIC_FOLDER: "../frontend/static"
+TEMPLATE_FOLDER: "../frontend/template"
