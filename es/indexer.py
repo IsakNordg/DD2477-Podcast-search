@@ -10,7 +10,8 @@ Description: This file contains functions to index data into Elasticsearch,
 
 from es.client import ESClient
 from es.config.config import configs
-
+import os
+import json
 class Indexer:
 
     def __init__(self, client=ESClient()):
@@ -53,6 +54,33 @@ class Indexer:
             dict: The response from Elasticsearch indexing operation.
         """
         # TODO(Simon): Implementation of indexing logic
+        count = 0
+        for root, dirs, files in os.walk("es/data/podcasts-no-audio-13GB/spotify-podcasts-2020/podcasts-transcripts"):
+            for file in files:
+                if file.endswith('.json'):
+                    file_path = os.path.join(root, file)
+                    try:
+                        data = 0
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        doc_id = os.path.basename(file_path)
+                        transcripts = ""
+                        parts = []
+                        for part in data['results']:
+                            part = part["alternatives"][0]
+                            if 'transcript' in part and "words" in part:
+                                transcripts += part["transcript"]
+                            parts.append(part)
+                        indexed_data = {
+                            "transcript": transcripts,
+                            "parts": parts
+                            }
+                        response = self.es.index(index=idx_name, id=doc_id, body=indexed_data)
+                        count += 1
+                        if count >= 10:
+                            return
+                    except Exception as e:
+                        print(f"Error indexing file '{file_path}': {e}")
 
         self.refresh_index(idx_name)
-        return self.es.index()
+        return
