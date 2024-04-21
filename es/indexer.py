@@ -63,19 +63,21 @@ class Indexer:
                         data = 0
                         with open(file_path, 'r', encoding='utf-8') as f:
                             data = json.load(f)
-                        doc_id = os.path.basename(file_path)
-                        transcripts = ""
-                        parts = []
+                        #For each file go through each json section
                         for part in data['results']:
                             part = part["alternatives"][0]
+                            #If transcript remember transcript, startTime of first word and endTime of last word
                             if 'transcript' in part and "words" in part:
-                                transcripts += part["transcript"]
-                            parts.append(part)
-                        indexed_data = {
-                            "transcript": transcripts,
-                            "parts": parts
-                            }
-                        response = self.es.index(index=idx_name, id=doc_id, body=indexed_data)
+                                transcript = part["transcript"]
+                                startTime = part['words'][0]['startTime']
+                                endTime = part['words'][-1]['endTime']
+                                doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
+                                indexed_data = {
+                                    "transcript": transcript,
+                                    "startTime": startTime,
+                                    "endTime": endTime
+                                    }
+                                self.es.index(index=idx_name, id=doc_id, body=indexed_data)
                         count += 1
                         if count >= 10:
                             return

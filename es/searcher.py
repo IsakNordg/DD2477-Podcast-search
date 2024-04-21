@@ -32,7 +32,7 @@ class Searcher:
         }
         return self.es.search(index=index, body=es_query)
 
-    def search_podcasts(self, index_name, query, args=None):
+    def search_podcasts(self, index_name, query, seconds = 30, args=None):
         """
         Search for podcasts in the specified index based on the given query.
 
@@ -45,23 +45,40 @@ class Searcher:
             dict: The search results returned by Elasticsearch.
         """
         # TODO(Isak): Implementation of searching logic
-        es_query = {
-            "query": {
-                "match": {
-                    "transcript": query
-                }
-            },
-            "_source": ["_id"]  # Return only the document IDs
-        }
-
-        # Execute the search query
         try:
-            search_results = self.es.search(index=index_name, body=es_query)
-            hits = search_results['hits']['hits']
-            document_ids = [hit['_id'] for hit in hits]  # Extract document IDs from search results
-            return document_ids
-        except Exception as e:
-            print(f"Error occurred during search: {e}")
-            return []
+            #Query
+            es_query = {
+                "query": {
+                    "match": {
+                        "transcript": query
+                    }
+                }
+            }
 
-        return relevant_clips
+            response = self.es.search(index=index_name, body=es_query)
+
+            #Retrieve relevant segments
+            segments = []
+            for hit in response['hits']['hits']:
+                segment = {
+                    "doc_id": hit['_id'],
+                    "transcript": hit['_source']['transcript'],
+                    "startTime": hit['_source']['startTime'],
+                    "endTime": hit['_source']['endTime']
+                }
+                segments.append(segment)
+
+            #Filter segments based on desired duration (seconds)
+            filtered_segments = []
+            for segment in segments:
+                start_seconds = float(segment['startTime'][:-1])  #Convert "X.XXXs" to seconds
+                end_seconds = float(segment['endTime'][:-1])
+                duration_seconds = end_seconds - start_seconds
+                if duration_seconds <= seconds:
+                    filtered_segments.append(segment)
+
+            return filtered_segments
+
+        except Exception as e:
+            print(f"Error searching for segments: {e}")
+            return []
