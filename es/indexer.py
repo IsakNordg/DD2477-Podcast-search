@@ -45,7 +45,7 @@ class Indexer:
         response = self.es.index(index=idx_name, id=doc_id, body=doc_body)
         self.refresh_index(idx_name)
         return response
-git 
+
     def index_podcasts(self, idx_name=configs["idx_name"], args=None):
         """
         Index podcast data into the specified Elasticsearch index.
