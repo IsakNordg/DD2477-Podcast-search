@@ -17,5 +17,6 @@ es/config/http_ca.crt
 
 **/__pycache__
 
+es/data/*
 es/data/metadata/*
 es/data/spotify-podcasts-2020/*
