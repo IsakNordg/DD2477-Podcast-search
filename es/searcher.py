@@ -85,8 +85,6 @@ class Searcher:
             if duration_seconds <= seconds:
                 filtered_segments.append(segment)
 
-        filtered_segments_extended = []
-
         # Check if the segments can be extended to reach the desired duration
         for segment in filtered_segments:
             start_seconds = float(segment['startTime'][:-1])
@@ -99,28 +97,25 @@ class Searcher:
                     "match": {
                         "path": segment['path'],
                     }
-                }
+                },
+                "size": 1000,   # FIXME This is just a high number. Maybe it should be bigger if some files are large,
+                                #       or more reasonable if all are smaller
             }
 
             response = self.es.search(index="podcast", body=es_query)
-
-            debug = False
-            if segment['path'] == "es/data/podcasts-no-audio-13GB/spotify-podcasts-2020/podcasts-transcripts\0\0\show_005ZAjJK1wlD4E2YxeibBb\49wcMBeJfaaL6KFFdsWvac.json":
-                debug = True
-
+            
             for hit in response['hits']['hits']:
-
+                
                 hit_start_seconds = float(hit['_source']['startTime'][:-1])
                 hit_end_seconds = float(hit['_source']['endTime'][:-1])
                 hit_duration_seconds = hit_end_seconds - hit_start_seconds
-                
-                if hit_start_seconds > end_seconds: # if hit is after segment
+
+                if hit_start_seconds >= end_seconds: # if hit is after segment
                     if duration_seconds + hit_duration_seconds <= seconds:  # if adding hit to segment is within desired duration
                         segment['endTime'] = hit['_source']['endTime']
                         duration_seconds += hit_duration_seconds
                         segment['transcript'] += " " + hit['_source']['transcript']
                     else:
                         break
-            filtered_segments_extended.append(segment)
 
-        return filtered_segments_extended
+        return filtered_segments
