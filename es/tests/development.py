@@ -19,12 +19,13 @@ if not index_exists:
 
 searcher = Searcher(client)  # Create an instance of the Searcher class with the Elasticsearch client.
 #First arg is the name of index, second is the query we want to search for, third seconds
-seconds = 15
+seconds = 35
 segments = searcher.search_podcasts("podcast", "hi", seconds)
 if segments:
     print(f"Found {len(segments)} relevant {seconds}-second segments:")
     for segment in segments:
         print(f"Document ID: {segment['doc_id']}")
+        print(f"Path: {segment['path']}")
         print(f"Transcript: {segment['transcript']}")
         print(f"Start Time: {segment['startTime']}, End Time: {segment['endTime']}")
         print("=" * 50)

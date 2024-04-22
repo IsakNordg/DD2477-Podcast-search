@@ -74,6 +74,7 @@ class Indexer:
                                 doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
                                 indexed_data = {
                                     "transcript": transcript,
+                                    "path": file_path,
                                     "startTime": startTime,
                                     "endTime": endTime
                                     }
