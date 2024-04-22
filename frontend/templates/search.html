@@ -28,6 +28,26 @@
       <a href="https://www.google.com">
         <button class="button" type="button" title="www.google.com"> Real Google Search </button>
       </a>
+      <label class="select" for="selector">
+      <select id="selector" required="required">
+        <optgroup label="Lexical Search">
+          <option value="0" class="searchItem">Basic Search</option>
+          <option value="1" class="searchItem">Advanced Search</option>
+        </optgroup>
+        <optgroup label="Semantic Search">
+          <option value="2" class="searchItem">kNN Search</option>
+        </optgroup>
+      </select>
+      <svg>
+        <use xlink:href="#select-arrow-down"></use>
+      </svg>
+      </label>
+      <!-- SVG Sprites-->
+      <svg class="sprites">
+        <symbol id="select-arrow-down" viewBox="0 0 10 6">
+          <polyline points="1 1 5 5 9 1"></polyline>
+        </symbol>
+      </svg>
     </div>
   </div>
   <script src="../static/js/search.js"></script>

@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
   const searchInput = document.getElementById('searchInput');
+  const selectInput = document.getElementById('selector');
 
   function setLoading(state) {
     if (state === true) {
@@ -16,11 +17,16 @@ document.addEventListener('DOMContentLoaded', function () {
   function handleInput(event) {
     if (event.key === 'Enter' || event.target.classList.contains('searchButton')) {
       setLoading(true);
+      const methodID = selectInput.value;
       const searchQuery = searchInput.value;
-      fetch('http://127.0.0.1:5000/search?query=' + searchQuery, {
+      const input = 'http://127.0.0.1:5000/search?query=' + searchQuery + '&method=' + methodID;
+      fetch(input, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery })
+        body: JSON.stringify({
+          query: searchQuery,
+          method: methodID
+        })
       })
       .then(response => {
         setLoading(false);

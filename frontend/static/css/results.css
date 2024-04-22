@@ -29,17 +29,20 @@
   border:2px solid;
   padding-left:2%;
   padding-right:2%;
+  border-radius:5px;
 }
 .result-item {
+  color:#292929;
+  margin-top:2%;
   margin-bottom:2.5%;
-  background-color:aliceblue;
-  padding-left:2%;
-  padding-right:2%;
-  font-family: Consolas, system-ui;
+  background-color:#f0f2f4;
+  padding: 0.001% 2%;
+  border-radius:5px;
+  font-family:Consolas, system-ui;
 }
 h3 {
-  font-family: system-ui;
-  color:#228B22;
+  font-family:system-ui;
+  color:#00c020;
 }
 
 .page-controls {
