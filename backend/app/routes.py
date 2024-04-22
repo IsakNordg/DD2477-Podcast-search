@@ -37,18 +37,22 @@ def search():
     if request.method == 'POST':
         # Get the search query from the request body
         query = request.json.get('query')
+        method = request.json.get('method')
         if not query:
             return jsonify({"Error": "Query parameter is missing."}), 400
+        if not method:
+            return jsonify({"Error": "Method parameter is missing."}), 400
         else:
-            return search_query(query)
+            return search_query(query, method)
 
     if request.method == 'GET':
         # Get the search query from the request body
         query = request.args.get('query', type=str)
-        if not query:
+        method = request.args.get('method', type=int)
+        if not query or not method:
             return render_template("search.html")
         else:
-            return search_query(query)
+            return search_query(query, method)
 
 @api.route('/results', methods=['GET', 'POST'])
 def results():
@@ -70,16 +74,17 @@ def page_not_found(e):
     """
     return 'Page not found', 404
 
-def search_query(query):
-    # Avoid searching for the same consecutive query
-    if session.get('query') and session['query'] == query:
+def search_query(query, method):
+    # Avoid searching for the same consecutive query and method
+    query_obj = {"query": query, "method": method}
+    if session.get('query_obj') and session['query_obj'] == query_obj:
         return redirect(url_for('api.results'))
     else:
-        session['query'] = query
+        session['query_obj'] = query_obj
     # Process the search query and get search results
     if isTest is True:
-        session['results'] = search_example(query)
+        session['results'] = search_example(query, method)
     else:
-        session['results'] = search_podcast(query)
+        session['results'] = search_podcast(query, method)
     # Redirect the user to the results page
     return redirect(url_for('api.results'))

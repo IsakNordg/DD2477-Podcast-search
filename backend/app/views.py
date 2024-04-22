@@ -14,7 +14,7 @@ from backend.config.config import configs
 
 searcher = Searcher()
 
-def search_example(query):
+def search_example(query, method=0):
     """
     Perform search in Elasticsearch for books with given query.
     """
@@ -28,9 +28,17 @@ def search_example(query):
                 'title': hit['_source']['title'],
                 'content': hit['_source']['content']} for hit in es_results['hits']['hits']]
 
+    print("Method: " + str(method))
     print("Result: " + str(results))
-
     return results
 
-def search_podcast(query):
-    pass
+def search_podcast(query, method=0):
+    es_results = searcher.search_podcasts(index=configs["idx_name"],
+                                          query=query,
+                                          args={'method': method})
+
+    results = [{'id': hit['_id'],
+                'title': hit['_source']['title'],
+                'content': hit['_source']['content']} for hit in es_results['hits']['hits']]
+
+    return results
