@@ -2,7 +2,7 @@
 
 from flask import Flask
 from flask_cors import CORS
-from backend.app.routes import api
+from backend.app.routes import api, session
 from backend.config.config import configs
 
 # Create Flask application instance
@@ -17,6 +17,7 @@ CORS(webapp) # Enable CORS for all routes
 webapp.register_blueprint(api)
 
 # Define other routes or configurations as needed
+webapp.secret_key = 'your_secret_key_there'
 
 # Import views (routes) to make them accessible
 from . import routes

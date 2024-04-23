@@ -1,5 +1,11 @@
 # settings.yml
 
 HOME_PAGE: "home.html"
-STATIC_FOLDER: "../frontend/static"
-TEMPLATE_FOLDER: "../frontend/template"
+
+# Root path relative to module (Flask app)
+STATIC_FOLDER: "../../frontend/static/"
+TEMPLATE_FOLDER: "../../frontend/templates/"
+
+# Other parameters
+is_test: true
+default_clip_sec: 120

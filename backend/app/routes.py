@@ -9,9 +9,10 @@ Description: This file defines Flask routes for handling HTTP requests.
              function to generate an HTTP response.
 """
 
-from flask import Blueprint, request, jsonify, render_template
-from .views import search_example
+from flask import Blueprint, request, session, jsonify, render_template, redirect, url_for
+from .views import search_example, search_podcast, configs
 
+isTest = configs["is_test"]
 api = Blueprint('api', __name__)
 
 @api.route('/')
@@ -24,27 +25,41 @@ def home():
     """
     return render_template("home.html")
 
-
-@api.route('/search_sample', methods=['GET', 'POST'])
-def search_sample():
+@api.route('/search', methods=['GET', 'POST'])
+def search():
     """
     Endpoint to perform search in Elasticsearch.
 
     Returns:
-        Flask.Response: JSON response containing search results.
+        Rendered HTML content for the search or results page.
     """
-    query = request.args.get('query', type=str)
+    if request.method == 'POST':
+        # Get the search query from the request body
+        query = request.json.get('query')
+        method = request.json.get('method')
+        seconds = request.json.get('second')
+        if not query or not method:
+            return jsonify({"Error": "Query parameter is missing."}), 400
+        else:
+            seconds = configs["default_clip_sec"] if seconds == '' else int(seconds)
+            return search_query(query, method, seconds)
 
-    if not query:
-        return jsonify({"error": "Query parameter is missing"}), 400
+    if request.method == 'GET':
+        # Get the search query from the request URL
+        query = request.args.get('query', type=str)
+        method = request.args.get('method', type=int)
+        seconds = request.args.get('second', type=int)
+        if not query or not method:
+            return render_template("search.html")
+        else:
+            return search_query(query, method, seconds)
 
-    results = search_example(query)
-
-    return jsonify(results)
-
-@api.route('/search', methods=['GET', 'POST'])
-def search():
-    pass
+@api.route('/results', methods=['GET', 'POST'])
+def results():
+    es_results = session.get('results')
+    if es_results is None:
+        return redirect(url_for('api.home'))
+    return render_template("results.html", results=es_results)
 
 @api.errorhandler(404)
 def page_not_found(e):
@@ -58,3 +73,18 @@ def page_not_found(e):
         tuple: A tuple containing the error message and status code.
     """
     return 'Page not found', 404
+
+def search_query(query, method, second):
+    # Avoid searching for the same consecutive query and method
+    query_obj = {"query": query, "method": method, "second": second}
+    if session.get('query_obj') and session['query_obj'] == query_obj:
+        return redirect(url_for('api.results'))
+    else:
+        session['query_obj'] = query_obj
+    # Process the search query and get search results
+    if isTest is True:
+        session['results'] = search_example(query, method)
+    else:
+        session['results'] = search_podcast(query, method, second)
+    # Redirect the user to the results page
+    return redirect(url_for('api.results'))
