@@ -24,21 +24,23 @@ def search_example(query, method=0):
     es_results = searcher.search_sample(index=configs["example_idx_name"], query=query)
 
     # Extract search results from Elasticsearch response
-    results = [{'id': hit['_id'],
-                'title': hit['_source']['title'],
+    results = [{'id': hit['_id'], 'score': hit['_score'], 'title': hit['_source']['title'],
                 'content': hit['_source']['content']} for hit in es_results['hits']['hits']]
 
     print("Method: " + str(method))
     print("Result: " + str(results))
     return results
 
-def search_podcast(query, method=0):
+def search_podcast(query, method=0, sec=120):
     es_results = searcher.search_podcasts(index=configs["idx_name"],
                                           query=query,
-                                          args={'method': method})
+                                          args={
+                                              'method': method,
+                                              'second': sec
+                                          })
 
-    results = [{'id': hit['_id'],
-                'title': hit['_source']['title'],
-                'content': hit['_source']['content']} for hit in es_results['hits']['hits']]
+    results = [{'id': hit['_id'], 'score': hit['_score'], 'title': hit['_source']['path'],
+                'start@': hit['_source']['startTime'], 'end@': hit['_source']['endTime'],
+                'content': hit['_source']['transcript']} for hit in es_results['hits']['hits']]
 
     return results

@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const searchInput = document.getElementById('searchInput');
   const selectInput = document.getElementById('selector');
+  const secondInput = document.getElementById('clipInput');
 
   function setLoading(state) {
     if (state === true) {
@@ -19,13 +20,14 @@ document.addEventListener('DOMContentLoaded', function () {
       setLoading(true);
       const methodID = selectInput.value;
       const searchQuery = searchInput.value;
-      const input = 'http://127.0.0.1:5000/search?query=' + searchQuery + '&method=' + methodID;
-      fetch(input, {
+      const queryClipTime = secondInput.value;
+      fetch("", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: searchQuery,
-          method: methodID
+          method: methodID,
+          second: queryClipTime,
         })
       })
       .then(response => {

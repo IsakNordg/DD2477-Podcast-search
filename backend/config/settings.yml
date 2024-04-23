@@ -8,3 +8,4 @@ TEMPLATE_FOLDER: "../../frontend/templates/"
 
 # Other parameters
 is_test: true
+default_clip_sec: 120

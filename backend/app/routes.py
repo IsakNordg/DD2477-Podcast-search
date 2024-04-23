@@ -31,28 +31,28 @@ def search():
     Endpoint to perform search in Elasticsearch.
 
     Returns:
-        Rendered HTML content for the search page, or
-        redirects to results page with search results.
+        Rendered HTML content for the search or results page.
     """
     if request.method == 'POST':
         # Get the search query from the request body
         query = request.json.get('query')
         method = request.json.get('method')
-        if not query:
+        seconds = request.json.get('second')
+        if not query or not method:
             return jsonify({"Error": "Query parameter is missing."}), 400
-        if not method:
-            return jsonify({"Error": "Method parameter is missing."}), 400
         else:
-            return search_query(query, method)
+            seconds = configs["default_clip_sec"] if seconds == '' else int(seconds)
+            return search_query(query, method, seconds)
 
     if request.method == 'GET':
-        # Get the search query from the request body
+        # Get the search query from the request URL
         query = request.args.get('query', type=str)
         method = request.args.get('method', type=int)
+        seconds = request.args.get('second', type=int)
         if not query or not method:
             return render_template("search.html")
         else:
-            return search_query(query, method)
+            return search_query(query, method, seconds)
 
 @api.route('/results', methods=['GET', 'POST'])
 def results():
@@ -74,9 +74,9 @@ def page_not_found(e):
     """
     return 'Page not found', 404
 
-def search_query(query, method):
+def search_query(query, method, second):
     # Avoid searching for the same consecutive query and method
-    query_obj = {"query": query, "method": method}
+    query_obj = {"query": query, "method": method, "second": second}
     if session.get('query_obj') and session['query_obj'] == query_obj:
         return redirect(url_for('api.results'))
     else:
@@ -85,6 +85,6 @@ def search_query(query, method):
     if isTest is True:
         session['results'] = search_example(query, method)
     else:
-        session['results'] = search_podcast(query, method)
+        session['results'] = search_podcast(query, method, second)
     # Redirect the user to the results page
     return redirect(url_for('api.results'))

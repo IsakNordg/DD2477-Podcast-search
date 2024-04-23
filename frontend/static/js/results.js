@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const nextIcon = document.getElementById('next-icon');
 
   // Initialize search results data
-  const searchResults = JSON.parse(resultsContainer.textContent)
+  const searchResults = JSON.parse(resultsContainer.textContent);
   const itemsPerPage = 10;
   const totalResults = searchResults.length;
   let currentItems;
@@ -39,16 +39,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const end = start + itemsPerPage;
     currentItems = searchResults.slice(start, end);
 
-    // Insert innerHTML of resultItems
+    // Insert resultItems into HTML
     resultsContainer.innerHTML = '';
     currentItems.forEach(item => {
+      const title = `<h3>${item.title}</h3>`;
       const div = document.createElement('div');
       div.className = 'result-item';
-      div.innerHTML = `
-        <h3>${item.title}</h3>
-        <p><b>ID:</b> ${item.id} &emsp;&emsp; <b>Rank:</b> ${item.id}</p>
-        <p><b>Content:</b> ${item.content}</p>
-      `;
+      // Define result text components
+      let idInfo = `<p><b>ID:</b> ${item.id}`;
+      let content = `</p><p><b>Content:</b> ${item.content}</p>`;
+      let timeInfo = ``;
+      // Append result text components
+      if ('rank' in item)
+        idInfo += `&emsp;&emsp; <b>Rank:</b> ${item['rank']}`;
+      if ('score' in item)
+        idInfo += `&emsp;&emsp; <b>Score:</b> ${item['score']}`;
+      if ('start@' in item && 'end@' in item) {
+        timeInfo += `</p><p><b>Start at:</b> ${item[`start@`]} 
+                &emsp;&emsp;<b>End Time:</b> ${item[`end@`]}`;
+      }
+      // Replace text of innerHTML with resultItems
+      div.innerHTML = title.concat(idInfo, timeInfo, content);
       resultsContainer.appendChild(div);
     });
 
@@ -60,5 +71,5 @@ document.addEventListener('DOMContentLoaded', function () {
   homeIcon.addEventListener('click', navToSearchPage);
   backIcon.addEventListener('click', handlePrevious);
   nextIcon.addEventListener('click', handleNext);
-  console.log(searchResults)
+  console.log(searchResults);
 });
