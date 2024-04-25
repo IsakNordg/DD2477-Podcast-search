@@ -65,10 +65,12 @@ class Searcher:
                     "path": hit['_source']['path'],
                     "transcript": hit['_source']['transcript'],
                     "startTime": hit['_source']['startTime'],
-                    "endTime": hit['_source']['endTime']
+                    "endTime": hit['_source']['endTime'],
+                    "score": hit['_score']
                 }
+                #print(segment["score"])
                 segments.append(segment)
-
+            segments = sorted(segments, key=lambda x: x['score'], reverse=True)
             return self.filter_segements(segments, seconds)
 
         except Exception as e:
@@ -103,19 +105,23 @@ class Searcher:
             }
 
             response = self.es.search(index="podcast", body=es_query)
-            
             for hit in response['hits']['hits']:
-                
+                hit_transcript = hit['_source']['transcript']
                 hit_start_seconds = float(hit['_source']['startTime'][:-1])
                 hit_end_seconds = float(hit['_source']['endTime'][:-1])
                 hit_duration_seconds = hit_end_seconds - hit_start_seconds
 
                 if hit_start_seconds >= end_seconds: # if hit is after segment
                     if duration_seconds + hit_duration_seconds <= seconds:  # if adding hit to segment is within desired duration
+                        #Adding score to segment if another segment also had query from previous search.
+                        for seg in segments:
+                            if seg['transcript'] == hit_transcript:
+                                segment['score'] += seg['score']
+
                         segment['endTime'] = hit['_source']['endTime']
                         duration_seconds += hit_duration_seconds
                         segment['transcript'] += " " + hit['_source']['transcript']
                     else:
                         break
-
+        filtered_segments = sorted(filtered_segments, key=lambda x: x['score'], reverse=True)
         return filtered_segments
