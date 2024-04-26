@@ -5,3 +5,5 @@ dev_idx_name: "dev_index"
 idx_name: "podcast_index"
 hosts: "https://localhost:9200/"
 http_crt: "http_ca.crt"
+default_clip_sec: 120
+podcasts_transcripts_path: "es/data/podcasts-no-audio-13GB/spotify-podcasts-2020/podcasts-transcripts"

@@ -8,8 +8,12 @@ Description: This file contains functions to index data into Elasticsearch,
              such as adding documents to the index.
 """
 
+import os
+import json
+
 from es.client import ESClient
 from es.config.config import configs
+
 
 class Indexer:
 
@@ -60,5 +64,58 @@ class Indexer:
         """
         # TODO(Simon): Implementation of indexing logic
 
+        # Initialize a counter to count the number of indexed files
+        count = 0
+
+        # Traverse through the directory containing podcast transcripts
+        for root, dirs, files in os.walk(configs["podcasts_transcripts_path"]):
+            for file in files:
+                # Process only JSON files
+                if file.endswith('.json'):
+                    file_path = os.path.join(root, file)
+                    try:
+                        # Read JSON data from file
+                        data = 0
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+
+                        # Process each section of JSON data
+                        for part in data['results']:
+                            part = part["alternatives"][0]
+
+                            # If transcript and word timestamps are available
+                            if 'transcript' in part and "words" in part:
+                                transcript = part["transcript"]
+                                startTime = part['words'][0]['startTime']
+                                endTime = part['words'][-1]['endTime']
+
+                                # Generate a unique document ID
+                                doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
+
+                                # Prepare data for indexing
+                                indexed_data = {
+                                    "transcript": transcript,
+                                    "path": file_path,
+                                    "startTime": startTime,
+                                    "endTime": endTime
+                                }
+
+                                # Index the data into Elasticsearch
+                                self.es.index(index=idx_name, id=doc_id, body=indexed_data)
+
+                        # Increment the counter
+                        count += 1
+
+                        # Limit the number of indexed files (for testing purposes)
+                        if count >= 10:
+                            return
+
+                    except Exception as e:
+                        print(f"Error indexing file '{file_path}': {e}")
+                        return False
+
+        # Refresh the Elasticsearch index
         self.refresh_index(idx_name)
-        return self.es.index()
+
+        # Return True if indexed successfully
+        return True

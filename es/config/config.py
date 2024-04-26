@@ -13,6 +13,7 @@ def read_es_config():
             _config = yaml.safe_load(f)
             _config.update(
                 {
+                    "hosts": credentials["URL"],
                     "username": credentials["USERNAME"],
                     "password": credentials["PASSWORD"],
                 }
