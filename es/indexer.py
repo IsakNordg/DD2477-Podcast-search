@@ -51,31 +51,25 @@ class Indexer:
         self.refresh_index(idx_name)
         return response
 
-    def index_podcasts(self, idx_name=configs["idx_name"], args=None):
+    def index_podcasts(self, idx_name=configs["idx_name"], **kwargs):
         """
         Index podcast data into the specified Elasticsearch index.
 
         Args:
             idx_name (str): The name of the Elasticsearch index to index the
             data into (specified in configs).
-            args (dict): Additional arguments for indexing.
-                        'limit' (int): The maximum number of podcasts to index into.
-                        'force_indexing' (bool): Whether to force the indexing of podcasts.
+            kwargs: Additional arguments for indexing.
+                'limit' (int): The maximum number of podcasts to index into.
+                'force_indexing' (bool): Whether to force the indexing of podcasts.
 
         Returns:
             boolean: True if successful, False otherwise.
         """
         # TODO(Simon): Implementation of indexing logic
 
-        # Initialize the limit for indexing files
-        limit = configs["idx_limit"]
-        force_indexing = False
-
-        if isinstance(args, dict):
-            if 'limit' in args and isinstance(args['limit'], int):
-                limit = args['limit']
-            if 'force_indexing' in args and isinstance(args['force_indexing'], bool):
-                force_indexing = args['force_indexing']
+        # Extract limit and force_indexing from kwargs if provided
+        limit = kwargs.get('limit', configs["idx_limit"])  # Default value is 10 if not provided
+        force_indexing = kwargs.get('force_indexing', False)  # Default value is False if not provided
 
         # If the index does exist, and force indexing is avoided
         if self.client.index_exists(configs['index_name']) and not force_indexing:

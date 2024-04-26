@@ -40,30 +40,25 @@ class Searcher:
         }
         return self.es.search(index=index, body=es_query)
 
-    def search_podcasts(self, index, query, args=None):
+    def search_podcasts(self, index, query, **kwargs):
         """
         Search for podcasts in the specified index based on the given query.
 
         Args:
             index (str): The name of the Elasticsearch index to search in.
             query (str): The search query string (NOT the body of search).
-            args (dict): Other parameters or options for the search (optional).
-                        'seconds' (int): The number of seconds to search for podcasts.
-                        'method_id' (int): The method ID to search for podcasts.
+            kwargs: Other parameters or options for the search (optional).
+                'seconds' (int): The number of seconds to search for podcasts.
+                'method' (int): The method ID to search for podcasts.
 
         Returns:
             dict: The search results returned by Elasticsearch.
         """
         # TODO(Isak): Implementation of searching logic
 
-        seconds = configs["default_clip_sec"]
-        method_id = 0
-
-        if isinstance(args, dict):
-            if 'seconds' in args and isinstance(args['seconds'], int):
-                seconds = args['seconds']
-            if 'method_id' in args and isinstance(args['method_id'], int):
-                method_id = args['method_id']
+        # Extract limit and force_indexing from kwargs if provided
+        seconds = kwargs.get('seconds', configs["default_clip_sec"])  # Default value is 120 if not provided
+        method_id = kwargs.get('method', 0)  # Default value is id=0 if not provided
 
         # Begin a try block to handle potential exceptions during execution
         try:

@@ -14,7 +14,7 @@ indexer = Indexer(client)
 
 # Index podcast data into the "podcast" index.
 # Set "force_indexing" to True to force reindexing.
-indexer.index_podcasts(idx_name=configs['index_name'], args={"limit": 10, "force_indexing": False})
+indexer.index_podcasts(idx_name=configs['index_name'], limit=10, force_indexing=False)
 
 # Create an instance of the Searcher class with the Elasticsearch client.
 searcher = Searcher(client)
@@ -24,7 +24,7 @@ seconds = 35
 
 # Search for segments containing the query "hi" within the specified duration.
 # The third argument is a dictionary with additional search parameters, in this case, the duration.
-segments = searcher.search_podcasts("podcast", "hi", {"seconds": seconds})
+segments = searcher.search_podcasts("podcast", "hi", seconds=seconds)
 
 # If relevant segments are found, print information about each segment.
 searcher.print_es_results(segments, seconds)
