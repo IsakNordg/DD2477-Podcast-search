@@ -56,7 +56,7 @@ class Searcher:
         """
         # TODO(Isak): Implementation of searching logic
 
-        # Extract limit and force_indexing from kwargs if provided
+        # Extract seconds and method from kwargs if provided
         seconds = kwargs.get('seconds', configs["default_clip_sec"])  # Default value is 120 if not provided
         method_id = kwargs.get('method', 0)  # Default value is id=0 if not provided
 

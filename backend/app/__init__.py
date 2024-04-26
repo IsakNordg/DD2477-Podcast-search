@@ -2,7 +2,7 @@
 
 from flask import Flask
 from flask_cors import CORS
-from backend.app.routes import api, session
+from backend.app.routes import api
 from backend.config.config import configs
 
 # Create Flask application instance

@@ -72,7 +72,7 @@ class Indexer:
         force_indexing = kwargs.get('force_indexing', False)  # Default value is False if not provided
 
         # If the index does exist, and force indexing is avoided
-        if self.client.index_exists(configs['index_name']) and not force_indexing:
+        if self.client.index_exists(configs['idx_name']) and not force_indexing:
             return True
 
         print("Indexing podcasts, please wait...")

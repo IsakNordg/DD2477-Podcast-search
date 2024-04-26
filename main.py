@@ -15,7 +15,6 @@ if __name__ == '__main__':
     debug = False
     limit = 105360
     hosts = "0.0.0.0"
-    index = configs['index_name']
 
     # Check if command-line arguments are provided
     if len(sys.argv) > 1:
@@ -23,20 +22,18 @@ if __name__ == '__main__':
         for arg in sys.argv[1:]:
             key, value = arg.split('=')
             if key == 'force_idx':
-                force = bool(value)
+                force = value.lower() == 'true'
             elif key == 'debug':
-                debug = bool(value)
+                debug = value.lower() == 'true'
             elif key == 'limit':
                 limit = int(value)
             elif key == 'hosts':
                 hosts = str(value)
-            elif key == 'idx_name':
-                index = str(value)
 
     # Create an instance of the Indexer class
     indexer = Indexer()
 
     # Index podcasts with the specified parameters
-    indexer.index_podcasts(idx_name=index, limit=limit, force_indexing=force)
+    indexer.index_podcasts(idx_name=configs['idx_name'], limit=limit, force_indexing=force)
 
     webapp.run(host=hosts, debug=debug)

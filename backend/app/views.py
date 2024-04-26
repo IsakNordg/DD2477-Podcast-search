@@ -34,12 +34,12 @@ def search_example(query, method=0):
 def search_podcast(query, method=0, sec=120):
     es_results = searcher.search_podcasts(index=configs["idx_name"],
                                           query=query,
-                                          second=sec,
+                                          seconds=sec,
                                           metahod=method,
                                           )
 
-    results = [{'id': hit['_id'], 'score': hit['_score'], 'title': hit['_source']['path'],
-                'start@': hit['_source']['startTime'], 'end@': hit['_source']['endTime'],
-                'content': hit['_source']['transcript']} for hit in es_results['hits']['hits']]
+    results = [{'id': hit['doc_id'], 'score': hit['score'], 'title': hit['doc_id'],
+                'start@': hit['startTime'], 'end@': hit['endTime'],
+                'content': hit['transcript']} for hit in es_results]
 
     return results

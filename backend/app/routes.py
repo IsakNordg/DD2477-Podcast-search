@@ -9,8 +9,10 @@ Description: This file defines Flask routes for handling HTTP requests.
              function to generate an HTTP response.
 """
 
-from flask import Blueprint, request, session, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from .views import search_example, search_podcast, configs
+
+session = dict()
 
 isTest = configs["is_test"]
 api = Blueprint('api', __name__)
