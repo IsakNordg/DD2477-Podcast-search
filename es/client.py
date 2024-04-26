@@ -23,5 +23,6 @@ class ESClient:
             ca_certs=crt_path
         )
 
-    def Get_es(self):
-        return self.es
+    def index_exists(self, index_name):
+        # Check if the podcast index exists in Elasticsearch.
+        return self.es.indices.exists(index=index_name)

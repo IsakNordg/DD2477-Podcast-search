@@ -9,17 +9,12 @@ from es.config.config import configs
 # Create an instance of the Elasticsearch client.
 client = ESClient()
 
-# Check if the "podcast" index exists in Elasticsearch.
-index_exists = client.Get_es().indices.exists(index="podcast")
+# Create an instance of the Indexer class with the Elasticsearch client.
+indexer = Indexer(client)
 
-# If the index does not exist, index podcast data.
-# Comment out the line below to override and force reindexing.
-if not index_exists:
-    print("Indexing...")
-    # Create an instance of the Indexer class with the Elasticsearch client.
-    indexer = Indexer(client)
-    # Index podcast data into the "podcast" index.
-    indexer.index_podcasts("podcast")
+# Index podcast data into the "podcast" index.
+# Set "force_indexing" to True to force reindexing.
+indexer.index_podcasts(idx_name=configs['index_name'], args={"limit": 10, "force_indexing": False})
 
 # Create an instance of the Searcher class with the Elasticsearch client.
 searcher = Searcher(client)
@@ -32,13 +27,4 @@ seconds = 35
 segments = searcher.search_podcasts("podcast", "hi", {"seconds": seconds})
 
 # If relevant segments are found, print information about each segment.
-if segments:
-    print(f"Found {len(segments)} relevant {seconds}-second segments:")
-    for segment in segments:
-        print(f"Document ID: {segment['doc_id']}")
-        print(f"Path: {segment['path']}")
-        print(f"Transcript: {segment['transcript']}")
-        print(f"Start Time: {segment['startTime']}, End Time: {segment['endTime']}")
-        print("=" * 50)
-else:
-    print("No relevant segments found for the query.")
+searcher.print_es_results(segments, seconds)

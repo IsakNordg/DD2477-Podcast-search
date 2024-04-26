@@ -18,10 +18,17 @@ class Searcher:
         pass
 
     @staticmethod
-    def print_es_results(results):
-        print("Search results: ")
-        for hit in results:
-            print(hit)
+    def print_es_results(segments, seconds):
+        if segments:
+            print(f"Found {len(segments)} relevant {seconds}-second segments:")
+            for segment in segments:
+                print(f"Document ID: {segment['doc_id']}")
+                print(f"Path: {segment['path']}")
+                print(f"Transcript: {segment['transcript']}")
+                print(f"Start Time: {segment['startTime']}, End Time: {segment['endTime']}")
+                print("=" * 50)
+        else:
+            print("No relevant segments found for the query.")
 
     def search_sample(self, index, query):
         es_query = {
@@ -41,8 +48,8 @@ class Searcher:
             index (str): The name of the Elasticsearch index to search in.
             query (str): The search query string (NOT the body of search).
             args (dict): Other parameters or options for the search (optional).
-                        'seconds' for the clip duration.
-                        'method_id' for the search method.
+                        'seconds' (int): The number of seconds to search for podcasts.
+                        'method_id' (int): The method ID to search for podcasts.
 
         Returns:
             dict: The search results returned by Elasticsearch.
@@ -53,9 +60,9 @@ class Searcher:
         method_id = 0
 
         if isinstance(args, dict):
-            if 'seconds' in args:
+            if 'seconds' in args and isinstance(args['seconds'], int):
                 seconds = args['seconds']
-            if 'method_id' in args:
+            if 'method_id' in args and isinstance(args['method_id'], int):
                 method_id = args['method_id']
 
         # Begin a try block to handle potential exceptions during execution

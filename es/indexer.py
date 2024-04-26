@@ -18,6 +18,7 @@ from es.config.config import configs
 class Indexer:
 
     def __init__(self, client=ESClient()):
+        self.client = client
         self.es = client.es
         pass
 
@@ -58,11 +59,29 @@ class Indexer:
             idx_name (str): The name of the Elasticsearch index to index the
             data into (specified in configs).
             args (dict): Additional arguments for indexing.
+                        'limit' (int): The maximum number of podcasts to index into.
+                        'force_indexing' (bool): Whether to force the indexing of podcasts.
 
         Returns:
-            dict: The response from Elasticsearch indexing operation.
+            boolean: True if successful, False otherwise.
         """
         # TODO(Simon): Implementation of indexing logic
+
+        # Initialize the limit for indexing files
+        limit = configs["idx_limit"]
+        force_indexing = False
+
+        if isinstance(args, dict):
+            if 'limit' in args and isinstance(args['limit'], int):
+                limit = args['limit']
+            if 'force_indexing' in args and isinstance(args['force_indexing'], bool):
+                force_indexing = args['force_indexing']
+
+        # If the index does exist, and force indexing is avoided
+        if self.client.index_exists(configs['index_name']) and not force_indexing:
+            return True
+
+        print("Indexing podcasts, please wait...")
 
         # Initialize a counter to count the number of indexed files
         count = 0
@@ -107,7 +126,7 @@ class Indexer:
                         count += 1
 
                         # Limit the number of indexed files (for testing purposes)
-                        if count >= 10:
+                        if count >= limit:
                             return
 
                     except Exception as e:
@@ -118,4 +137,5 @@ class Indexer:
         self.refresh_index(idx_name)
 
         # Return True if indexed successfully
+        print("Indexing podcasts, done.")
         return True

@@ -2,7 +2,8 @@
 
 example_idx_name: "example_index"
 dev_idx_name: "dev_index"
-idx_name: "podcast_index"
+idx_name: "podcast"
+idx_limit: 10
 hosts: "https://localhost:9200/"
 http_crt: "http_ca.crt"
 default_clip_sec: 120

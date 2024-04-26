@@ -7,5 +7,4 @@ STATIC_FOLDER: "../../frontend/static/"
 TEMPLATE_FOLDER: "../../frontend/templates/"
 
 # Other parameters
-is_test: true
-default_clip_sec: 120
+is_test: false
