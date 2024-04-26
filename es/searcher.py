@@ -9,6 +9,7 @@ Description: This file contains functions to search for data in Elasticsearch,
 """
 
 from es.client import ESClient
+from es.config.config import configs
 
 class Searcher:
 
@@ -40,10 +41,122 @@ class Searcher:
             index (str): The name of the Elasticsearch index to search in.
             query (str): The search query string (NOT the body of search).
             args (dict): Other parameters or options for the search (optional).
+                        'seconds' for the clip duration.
+                        'method_id' for the search method.
 
         Returns:
             dict: The search results returned by Elasticsearch.
         """
         # TODO(Isak): Implementation of searching logic
 
-        return self.es.search()
+        seconds = configs["default_clip_sec"]
+        method_id = 0
+
+        if isinstance(args, dict):
+            if 'seconds' in args:
+                seconds = args['seconds']
+            if 'method_id' in args:
+                method_id = args['method_id']
+
+        # Begin a try block to handle potential exceptions during execution
+        try:
+            # Define an Elasticsearch query
+            es_query = {
+                "query": {
+                    "match": {
+                        "transcript": query
+                    }
+                }
+            }
+
+            # Execute the Elasticsearch with defined query
+            response = self.es.search(index=index, body=es_query)
+
+            # Initialize an empty list to store relevant segments
+            segments = []
+
+            # Iterate through the hits returned by the Elasticsearch
+            for hit in response['hits']['hits']:
+                # For each hit, create a dictionary representing a segment
+                segment = {
+                    "doc_id": hit['_id'],
+                    "path": hit['_source']['path'],
+                    "transcript": hit['_source']['transcript'],
+                    "startTime": hit['_source']['startTime'],
+                    "endTime": hit['_source']['endTime'],
+                    "score": hit['_score']
+                }
+                # Append the segment to the list of segments
+                segments.append(segment)
+
+            # Sort the segments based on their scores in descending order
+            segments = sorted(segments, key=lambda x: x['score'], reverse=True)
+
+            # Return the filtered segments based on the specified duration
+            return self.filter_segments(segments, seconds)
+
+        except Exception as e:
+            # Catch any exceptions that occur during execution
+            print(f"Error searching for segments: {e}")
+            # If an exception occurs, return an empty list
+            return []
+        
+    def filter_segments(self, segments, seconds):
+        """
+        Filter segments based on the desired duration (in seconds).
+
+        Args:
+            segments (list): List of segments to be filtered.
+            seconds (int): Desired duration in seconds.
+
+        Returns:
+            list: Filtered segments.
+        """
+        filtered_segments = []
+        for segment in segments:
+            start_seconds = float(segment['startTime'][:-1])  #Convert "X.XXXs" to seconds
+            end_seconds = float(segment['endTime'][:-1])
+            duration_seconds = end_seconds - start_seconds
+            if duration_seconds <= seconds:
+                filtered_segments.append(segment)
+
+        # Check if the segments can be extended to reach the desired duration
+        for segment in filtered_segments:
+            start_seconds = float(segment['startTime'][:-1])
+            end_seconds = float(segment['endTime'][:-1])
+            duration_seconds = end_seconds - start_seconds
+
+            # Get following segments that are within the desired duration
+            es_query = {
+                "query": {
+                    "match": {
+                        "path": segment['path'],
+                    }
+                },
+                "size": 1000,   # FIXME This is just a high number. Maybe it should be bigger if some files are large,
+                                #       or more reasonable if all are smaller
+            }
+
+            response = self.es.search(index="podcast", body=es_query)
+            for hit in response['hits']['hits']:
+                hit_transcript = hit['_source']['transcript']
+                hit_start_seconds = float(hit['_source']['startTime'][:-1])
+                hit_end_seconds = float(hit['_source']['endTime'][:-1])
+                hit_duration_seconds = hit_end_seconds - hit_start_seconds
+
+                if hit_start_seconds >= end_seconds: # if hit is after segment
+                    if duration_seconds + hit_duration_seconds <= seconds:  # if adding hit to segment is within desired duration
+                        # Add score to segment if another segment also had query from previous search.
+                        for seg in segments:
+                            if seg['transcript'] == hit_transcript:
+                                segment['score'] += seg['score']
+
+                        segment['endTime'] = hit['_source']['endTime']
+                        duration_seconds += hit_duration_seconds
+                        segment['transcript'] += " " + hit['_source']['transcript']
+                    else:
+                        break
+
+        # Sort filtered segments based on their scores in descending order
+        filtered_segments = sorted(filtered_segments, key=lambda x: x['score'], reverse=True)
+        return filtered_segments
