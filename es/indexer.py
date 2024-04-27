@@ -73,6 +73,7 @@ class Indexer:
 
         # If the index does exist, and force indexing is avoided
         if self.client.index_exists(configs['idx_name']) and not force_indexing:
+            print("Index loaded from elastic search.")
             return True
 
         print("Indexing podcasts, please wait...")
@@ -119,9 +120,13 @@ class Indexer:
                         # Increment the counter
                         count += 1
 
+                        # Print a progress message
+                        if count % 10 == 0:
+                            print(f"{count} podcasts indexed.")
+
                         # Limit the number of indexed files (for testing purposes)
                         if count >= limit:
-                            return
+                            return True
 
                     except Exception as e:
                         print(f"Error indexing file '{file_path}': {e}")

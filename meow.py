@@ -1,4 +1,4 @@
-# project main.py
+# project main
 
 import sys
 
@@ -36,4 +36,4 @@ if __name__ == '__main__':
     # Index podcasts with the specified parameters
     indexer.index_podcasts(idx_name=configs['idx_name'], limit=limit, force_indexing=force)
 
-    webapp.run(host=hosts, debug=debug)
+    webapp.run(host=hosts, debug=debug, use_reloader=False)
