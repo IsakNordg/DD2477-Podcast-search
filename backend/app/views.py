@@ -35,7 +35,7 @@ def search_podcast(query, method=0, sec=120):
     es_results = searcher.search_podcasts(index=configs["idx_name"],
                                           query=query,
                                           seconds=sec,
-                                          metahod=method,
+                                          method=method,
                                           )
 
     results = [{'id': hit['doc_id'], 'score': hit['score'], 'title': hit['doc_id'],
