@@ -61,7 +61,7 @@ To install and run this project locally, follow these steps:
     
 4.  Run the Flask application:
     ```shell
-    python mewo.py
+    python meow.py
     ```
     
     > The repo also provides the Docker-Compose file for you to run applications in a docker container.
