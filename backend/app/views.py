@@ -11,6 +11,7 @@ Description: This file contains view functions that handle HTTP requests
 
 from es.searcher import Searcher
 from backend.config.config import configs
+from backend.scraper.scraper import Scraper
 
 searcher = Searcher()
 
@@ -37,9 +38,12 @@ def search_podcast(query, method=0, sec=120):
                                           seconds=sec,
                                           method=method,
                                           )
+    # Add audio scraper (v2.0)
+    scraper = Scraper()
 
-    results = [{'id': hit['doc_id'], 'score': hit['score'], 'title': hit['doc_id'],
+    results = [{'id': hit['doc_id'], 'score': hit['score'], 'title': hit['title'],
                 'start@': hit['startTime'], 'end@': hit['endTime'],
-                'content': hit['transcript']} for hit in es_results]
+                'url': scraper.scrape_audio_url(hit['rss_link'], hit['episode_name']),
+                'episode': hit['episode_name'], 'content': hit['transcript']} for hit in es_results]
 
     return results

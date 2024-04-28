@@ -48,18 +48,29 @@ document.addEventListener('DOMContentLoaded', function () {
       // Define result text components
       let idInfo = `<p><b>ID:</b> ${item.id}`;
       let content = `</p><p><b>Content:</b> ${item.content}</p>`;
-      let timeInfo = ``;
+      let audioInfo = ``;
       // Append result text components
       if ('rank' in item)
         idInfo += `&emsp;&emsp; <b>Rank:</b> ${item['rank']}`;
       if ('score' in item)
         idInfo += `&emsp;&emsp; <b>Score:</b> ${item['score']}`;
       if ('start@' in item && 'end@' in item) {
-        timeInfo += `</p><p><b>Start at:</b> ${item[`start@`]} 
-                &emsp;&emsp;<b>End Time:</b> ${item[`end@`]}`;
+        audioInfo += `</p><p><b>Start at:</b> ${item[`start@`]}
+        &emsp;&emsp;<b>End Time:</b> ${item[`end@`]}`;
+      }
+      // Metadata update (v2.0)
+      const linkName = truncateText(`${item[`episode`]}`);
+      function truncateText(text) {
+        // Check if the length of the text exceeds 44 characters
+        if (text.length > 36) return text.substring(0, 32) + "...";
+        else return text;
+      }
+      if ('url' in item && 'episode' in item) {
+        audioInfo += `&emsp;&emsp; <b>Link:</b>
+        <a href="${item[`url`]}" title="Link to audio" target="_blank"> ${linkName} </a>`;
       }
       // Replace text of innerHTML with resultItems
-      div.innerHTML = title.concat(idInfo, timeInfo, content);
+      div.innerHTML = title.concat(idInfo, audioInfo, content);
       resultsContainer.appendChild(div);
     });
 

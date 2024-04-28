@@ -86,7 +86,11 @@ class Searcher:
                     "transcript": hit['_source']['transcript'],
                     "startTime": hit['_source']['startTime'],
                     "endTime": hit['_source']['endTime'],
-                    "score": hit['_score']
+                    "score": hit['_score'],
+                    # Update metadata (v2.0)
+                    "episode_name": hit['_source']['episode_name'],
+                    "rss_link": hit['_source']['rss_link'],
+                    "title": hit['_source']['title'],
                 }
                 # Append the segment to the list of segments
                 segments.append(segment)
