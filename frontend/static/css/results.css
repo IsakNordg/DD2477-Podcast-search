@@ -38,10 +38,16 @@
   background-color:#f0f2f4;
   padding: 0.001% 2%;
   border-radius:5px;
+  font-family:Arial, system-ui;
+  line-height:25px;
+}
+.info {
   font-family:Consolas, system-ui;
+  line-height:16px;
 }
 h3 {
   font-family:system-ui;
+  font-size:22px;
   color:#00c020;
 }
 

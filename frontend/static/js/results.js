@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchResults = JSON.parse(resultsContainer.textContent);
   const itemsPerPage = 10;
   const totalResults = searchResults.length;
-  let currentItems;
+  let currentItems, rank = 0;
   let currentPage = 1;
   let totalPages = Math.ceil(totalResults / itemsPerPage);
 
@@ -35,6 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function renderResults() {
+    function truncateText(text, length) {
+      // Check if the length of the text exceeds given characters
+      if (text.length > length) return text.substring(0, length-4) + "...";
+      else return text;
+    }
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     currentItems = searchResults.slice(start, end);
@@ -42,35 +47,37 @@ document.addEventListener('DOMContentLoaded', function () {
     // Insert resultItems into HTML
     resultsContainer.innerHTML = '';
     currentItems.forEach(item => {
-      const title = `<h3>${item.title}</h3>`;
+      const title = `<h3>${truncateText(item.title, 68)}</h3>`;
       const div = document.createElement('div');
       div.className = 'result-item';
       // Define result text components
-      let idInfo = `<p><b>ID:</b> ${item.id}`;
-      let content = `</p><p><b>Content:</b> ${item.content}</p>`;
+      let idInfo = `<div class="info"><p><b>ID:</b> ${item.id}`;
+      let content = `<b>Contents:</b> ${item.content}</p>`;
+      let timeInfo = `<div class="info">`;
       let audioInfo = ``;
       // Append result text components
-      if ('rank' in item)
-        idInfo += `&emsp;&emsp; <b>Rank:</b> ${item['rank']}`;
       if ('score' in item)
         idInfo += `&emsp;&emsp; <b>Score:</b> ${item['score']}`;
       if ('start@' in item && 'end@' in item) {
-        audioInfo += `</p><p><b>Start at:</b> ${item[`start@`]}
-        &emsp;&emsp;<b>End Time:</b> ${item[`end@`]}`;
+        timeInfo += `<b>Start:</b> ${item[`start@`]}
+        &emsp;&emsp;<b>End at:</b> ${item[`end@`]}`;
       }
+      rank += 1;
+      idInfo += `&emsp;&emsp; <b>Rank:</b> ${rank}</p></div><p>`;
       // Metadata update (v2.0)
-      const linkName = truncateText(`${item[`episode`]}`);
-      function truncateText(text) {
-        // Check if the length of the text exceeds 44 characters
-        if (text.length > 36) return text.substring(0, 32) + "...";
-        else return text;
+      if ('episode' in item) {
+        const linkName = truncateText(`${item[`episode`]}`, 48);
+        timeInfo += `&emsp;&emsp; <b>Audio: ${linkName}</b>`;
       }
-      if ('url' in item && 'episode' in item) {
-        audioInfo += `&emsp;&emsp; <b>Link:</b>
-        <a href="${item[`url`]}" title="Link to audio" target="_blank"> ${linkName} </a>`;
+      timeInfo += `</p></div><p>`;
+      if ('url' in item) {
+        audioInfo += `<audio id="audioPlayer" controls style="width: 50%; height: 6%;">
+          <source src="${item[`url`]}" type="audio/mpeg">
+          Notice: Your browser does not support the audio element.
+        </audio></p><p>`;
       }
       // Replace text of innerHTML with resultItems
-      div.innerHTML = title.concat(idInfo, audioInfo, content);
+      div.innerHTML = title.concat(idInfo, audioInfo, timeInfo, content);
       resultsContainer.appendChild(div);
     });
 

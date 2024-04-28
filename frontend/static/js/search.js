@@ -46,5 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
   setLoading(false);
   window.onload = searchInput.select();
   searchInput.addEventListener('keydown', handleInput);
+  secondInput.addEventListener('keydown', handleInput);
+  selectInput.addEventListener('keydown', handleInput);
   document.querySelector('.searchButton').addEventListener('click', handleInput);
 });
