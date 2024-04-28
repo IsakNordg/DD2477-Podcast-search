@@ -18,10 +18,12 @@ The interface is intuitive and user-friendly, allowing users to specify the dura
 - [Git](https://git-scm.com/) installed on your system (if cloning the repository)
 
 ### Datasets
-    
+
 - Download the dataset from [**spotify-podcasts-2020**](https://podcastsdataset.byspotify.com/)
 
-- Unzip the **podcasts-transcripts** to the path defined by `podcasts_transcripts_path` in `elasticsearch.yml`
+- Unzip the `podcasts-transcripts` to the path defined by `podcasts_transcripts_path` in `elasticsearch.yml`
+
+- Unzip the `metadata.tsv` to the path defined by `metadata_tsv_path` in `elasticsearch.yml`
 
 
 ### Installation
@@ -32,7 +34,7 @@ To install and run this project locally, follow these steps:
 
     ```shell
     git clone git@github.com:IsakNordg/DD2477-Podcast-search.git
-    ``` 
+    ```
 
 2.  Install dependencies:
 
@@ -46,7 +48,7 @@ To install and run this project locally, follow these steps:
 
     Ensure that Elasticsearch is installed and running locally or on a remote server.
     Docker example:
-      
+    
     ```shell
     docker network create elastic
     docker pull docker.elastic.co/elasticsearch/elasticsearch:8.13.2
