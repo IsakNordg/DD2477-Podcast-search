@@ -120,16 +120,16 @@ class Searcher:
         """
         filtered_segments = []
         for segment in segments:
-            start_seconds = float(segment['startTime'][:-1])  #Convert "X.XXXs" to seconds
-            end_seconds = float(segment['endTime'][:-1])
+            start_seconds = segment['startTime']
+            end_seconds = segment['endTime']
             duration_seconds = end_seconds - start_seconds
             if duration_seconds <= seconds:
                 filtered_segments.append(segment)
 
         # Check if the segments can be extended to reach the desired duration
         for segment in filtered_segments:
-            start_seconds = float(segment['startTime'][:-1])
-            end_seconds = float(segment['endTime'][:-1])
+            start_seconds = segment['startTime']
+            end_seconds = segment['endTime']
             duration_seconds = end_seconds - start_seconds
 
             # Get following segments that are within the desired duration
@@ -146,8 +146,8 @@ class Searcher:
             response = self.es.search(index="podcast", body=es_query)
             for hit in response['hits']['hits']:
                 hit_transcript = hit['_source']['transcript']
-                hit_start_seconds = float(hit['_source']['startTime'][:-1])
-                hit_end_seconds = float(hit['_source']['endTime'][:-1])
+                hit_start_seconds = hit['_source']['startTime']
+                hit_end_seconds = hit['_source']['endTime']
                 hit_duration_seconds = hit_end_seconds - hit_start_seconds
 
                 if hit_start_seconds >= end_seconds: # if hit is after segment

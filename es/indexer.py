@@ -126,6 +126,10 @@ class Indexer:
                                 # Generate a unique document ID
                                 doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
 
+                                # Convert "X.XXXs" to seconds
+                                startTime = float(startTime[:-1])
+                                endTime = float(endTime[:-1])
+
                                 # Initialize metadata (v2.0)
                                 rss_link, title, episode_name = "", "", ""
 

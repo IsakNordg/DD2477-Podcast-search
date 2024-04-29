@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if ('score' in item)
         idInfo += `&emsp;&emsp; <b>Score:</b> ${item['score']}`;
       if ('start@' in item && 'end@' in item) {
-        timeInfo += `<b>Start:</b> ${item[`start@`]}
-        &emsp;&emsp;<b>End at:</b> ${item[`end@`]}`;
+        timeInfo += `<b>Start:</b> ${item[`start@`]}s
+        &emsp;&emsp;<b>End at:</b> ${item[`end@`]}s`;
       }
       rank += 1;
       idInfo += `&emsp;&emsp; <b>Rank:</b> ${rank}</p></div><p>`;
@@ -71,14 +71,21 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       timeInfo += `</p></div><p>`;
       if ('url' in item) {
-        audioInfo += `<audio id="audioPlayer" controls style="width: 50%; height: 6%;">
+        audioInfo += `<audio id="audioPlayer${rank}" controls style="width: 440px; height: 6%;">
           <source src="${item[`url`]}" type="audio/mpeg">
           &emsp; Your browser does not support the audio element.
         </audio></p><p>`;
       }
+      function audioClip(startTime) {
+        const audio = document.getElementById('audioPlayer'.concat(rank));
+        if (audio !== null) {
+          audio.currentTime = startTime;
+        }
+      }
       // Replace text of innerHTML with resultItems
       div.innerHTML = title.concat(idInfo, audioInfo, timeInfo, content);
       resultsContainer.appendChild(div);
+      audioClip(item['start@'])
     });
 
     pageInfo.innerHTML = `<i>Showing Page</i> ${currentPage} of ${totalPages}`;
