@@ -45,6 +45,10 @@
   font-family:Consolas, system-ui;
   line-height:16px;
 }
+.text {
+  line-height:25px;
+  color:#696969;
+}
 h3 {
   font-family:system-ui;
   font-size:22px;

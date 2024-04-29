@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
       div.className = 'result-item';
       // Define result text components
       let idInfo = `<div class="info"><p><b>ID:</b> ${item.id}`;
-      let content = `<b>Contents:</b> ${item.content}</p>`;
+      let content = `<div class="text"><b>Contents:</b> ${item.content}</div></p>`;
       let timeInfo = `<div class="info">`;
       let audioInfo = ``;
       // Append result text components
@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', function () {
       // Metadata update (v2.0)
       if ('episode' in item) {
         const linkName = truncateText(`${item[`episode`]}`, 48);
-        timeInfo += `&emsp;&emsp; <b>Audio: ${linkName}</b>`;
+        timeInfo += `&emsp;&emsp; <b>Audio: <font color="#3779c9">${linkName}</font></b>`;
       }
       timeInfo += `</p></div><p>`;
       if ('url' in item) {
         audioInfo += `<audio id="audioPlayer" controls style="width: 50%; height: 6%;">
           <source src="${item[`url`]}" type="audio/mpeg">
-          Notice: Your browser does not support the audio element.
+          &emsp; Your browser does not support the audio element.
         </audio></p><p>`;
       }
       // Replace text of innerHTML with resultItems
