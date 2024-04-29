@@ -19,6 +19,7 @@ from es.config.config import configs
 class Indexer:
 
     def __init__(self, client=ESClient()):
+        self.indexSet = self.read_index_info()  # Update index appending (v3.0)
         self.metadata = self.read_metadata()  # Update metadata (v2.0)
         self.client = client
         self.es = client.es
@@ -54,6 +55,67 @@ class Indexer:
             print(f"Error occurred while reading the TSV file: {e}")
             return None
 
+    @staticmethod  # (v3.0)
+    def read_index_info(file_path=configs['idx_info_path']):
+        info = set()  # Initialize an empty set to store the info
+        try:
+            with open(file_path, 'r', encoding='utf-8') as index_info:
+                for line in index_info:
+                    info.add(line.strip())
+            print("IndexInfo is loaded successfully.")
+        except FileNotFoundError:
+            print(f"Creating index_info at {file_path}")
+        except Exception as e:
+            print(f"Error occurred while reading the indexInfo: {e}")
+        return info
+
+    def read_podcast_transcript(self, file_name, file_path, idx_name):
+        # Read JSON data from file
+        data = 0
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Process each section of JSON data
+        for part in data['results']:
+            part = part["alternatives"][0]
+
+            # If transcript and word timestamps are available
+            if 'transcript' in part and "words" in part:
+                transcript = part["transcript"]
+                startTime = part['words'][0]['startTime']
+                endTime = part['words'][-1]['endTime']
+
+                # Generate a unique document ID
+                doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
+
+                # Convert "X.XXXs" to seconds
+                startTime = float(startTime[:-1])
+                endTime = float(endTime[:-1])
+
+                # Initialize metadata (v2.0)
+                rss_link, title, episode_name = "", "", ""
+
+                # Integrate metadata (v2.0)
+                if file_name in self.metadata:
+                    episode_name = self.metadata[file_name]['episode_name']
+                    rss_link = self.metadata[file_name]['rss_link']
+                    title = self.metadata[file_name]['show_name']
+
+                # Prepare data for indexing
+                indexed_data = {
+                    "transcript": transcript,
+                    "path": file_path,
+                    "startTime": startTime,
+                    "endTime": endTime,
+                    # Update metadata (v2.0)
+                    "episode_name": episode_name,
+                    "rss_link": rss_link,
+                    "title": title,
+                }
+
+                # Index the data into Elasticsearch
+                self.es.index(index=idx_name, id=doc_id, body=indexed_data)
+
     def index_sample(self, idx_name=configs["example_idx_name"]):
         doc_id = "0"
         doc_body = {
@@ -88,10 +150,11 @@ class Indexer:
 
         # Extract limit and force_indexing from kwargs if provided
         limit = kwargs.get('limit', configs["idx_limit"])  # Default value is 10 if not provided
+        append = kwargs.get('append', True)  # Default value is True if not provided
         force_indexing = kwargs.get('force_indexing', False)  # Default value is False if not provided
 
         # If the index does exist, and force indexing is avoided
-        if self.client.index_exists(configs['idx_name']) and not force_indexing:
+        if self.client.index_exists(configs['idx_name']) and not (force_indexing or append):
             print("Index loaded from elastic search.")
             return True
 
@@ -99,6 +162,9 @@ class Indexer:
 
         # Initialize a counter to count the number of indexed files
         count = 0
+
+        # Open the indexInfo in 'append' mode (v3.0)
+        index_info = open(configs['idx_info_path'], 'a')
 
         # Traverse through the directory containing podcast transcripts
         for root, dirs, files in os.walk(configs["podcasts_transcripts_path"]):
@@ -108,51 +174,14 @@ class Indexer:
                     file_name = file[:-5]
                     file_path = os.path.join(root, file)
                     try:
-                        # Read JSON data from file
-                        data = 0
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            data = json.load(f)
-
-                        # Process each section of JSON data
-                        for part in data['results']:
-                            part = part["alternatives"][0]
-
-                            # If transcript and word timestamps are available
-                            if 'transcript' in part and "words" in part:
-                                transcript = part["transcript"]
-                                startTime = part['words'][0]['startTime']
-                                endTime = part['words'][-1]['endTime']
-
-                                # Generate a unique document ID
-                                doc_id = os.path.basename(file_path) + f"_{startTime}_{endTime}"
-
-                                # Convert "X.XXXs" to seconds
-                                startTime = float(startTime[:-1])
-                                endTime = float(endTime[:-1])
-
-                                # Initialize metadata (v2.0)
-                                rss_link, title, episode_name = "", "", ""
-
-                                # Integrate metadata (v2.0)
-                                if file_name in self.metadata:
-                                    episode_name = self.metadata[file_name]['episode_name']
-                                    rss_link = self.metadata[file_name]['rss_link']
-                                    title = self.metadata[file_name]['show_name']
-
-                                # Prepare data for indexing
-                                indexed_data = {
-                                    "transcript": transcript,
-                                    "path": file_path,
-                                    "startTime": startTime,
-                                    "endTime": endTime,
-                                    # Update metadata (v2.0)
-                                    "episode_name": episode_name,
-                                    "rss_link": rss_link,
-                                    "title": title,
-                                }
-
-                                # Index the data into Elasticsearch
-                                self.es.index(index=idx_name, id=doc_id, body=indexed_data)
+                        if file_name in self.indexSet:
+                            if force_indexing or not append:
+                                self.read_podcast_transcript(file_name, file_path, idx_name)
+                            else:
+                                pass
+                        else:
+                            self.read_podcast_transcript(file_name, file_path, idx_name)
+                            index_info.write(file_name + '\n')
 
                         # Increment the counter
                         count += 1
@@ -163,6 +192,11 @@ class Indexer:
 
                         # Limit the number of indexed files (for testing purposes)
                         if count >= limit:
+                            # Refresh the Elasticsearch index
+                            self.refresh_index(idx_name)
+
+                            print("Indexing podcasts, limit reached.")
+                            index_info.close()
                             return True
 
                     except IOError as e:
@@ -175,6 +209,6 @@ class Indexer:
         # Refresh the Elasticsearch index
         self.refresh_index(idx_name)
 
-        # Return True if indexed successfully
         print("Indexing podcasts, done.")
+        index_info.close()
         return True
