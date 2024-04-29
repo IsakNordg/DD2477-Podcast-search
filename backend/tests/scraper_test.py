@@ -43,3 +43,12 @@ class TestScraper(unittest.TestCase):
         episode_name_5 = 'The Lion, The Witch, And The Wardrobe - Ashley Beall'
         url = self.scraper.scrape_audio_url(http_link_5, episode_name_5)
         self.assertEqual(url, None)
+
+    def test_scrape_set6(self):
+        # Test v2.0
+        http_link_6 = 'https://anchor.fm/s/f0f2f58/podcast/rss'
+        episode_name_6 = 'EPISODE 14: Stephanie Soo vs. Nikocado Avocado (The Mukbang Community is Shook!)'
+        url = self.scraper.scrape_audio_url(http_link_6, episode_name_6)
+        self.assertEqual(url, "https://anchor.fm/s/f0f2f58/podcast/play/9455788/"
+                              "https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F"
+                              "2020-0-3%2F41739515-44100-2-bbeda50b3e0d8.m4a")
