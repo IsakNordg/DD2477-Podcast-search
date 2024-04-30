@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchInput = document.getElementById('searchInput');
   const selectInput = document.getElementById('selector');
   const secondInput = document.getElementById('clipInput');
+  const numberInput = document.getElementById('sizeInput');
 
   function setLoading(state) {
     if (state === true) {
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const methodID = selectInput.value;
       const searchQuery = searchInput.value;
       const queryClipTime = secondInput.value;
+      const topNumResults = numberInput.value;
       fetch("", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
           query: searchQuery,
           method: methodID,
           second: queryClipTime,
+          size: topNumResults,
         })
       })
       .then(response => {
@@ -48,5 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
   searchInput.addEventListener('keydown', handleInput);
   secondInput.addEventListener('keydown', handleInput);
   selectInput.addEventListener('keydown', handleInput);
+  numberInput.addEventListener('keydown', handleInput);
   document.querySelector('.searchButton').addEventListener('click', handleInput);
 });

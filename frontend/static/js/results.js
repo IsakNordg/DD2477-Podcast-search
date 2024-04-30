@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchResults = JSON.parse(resultsContainer.textContent);
   const itemsPerPage = 10;
   const totalResults = searchResults.length;
-  let currentItems, rank = 0;
+  let currentItems;
   let currentPage = 1;
   let totalPages = Math.ceil(totalResults / itemsPerPage);
 
@@ -62,8 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         timeInfo += `<b>Start:</b> ${item[`start@`]}
         &emsp;&emsp;<b>End at:</b> ${item[`end@`]}`;
       }
-      rank += 1;
-      idInfo += `&emsp;&emsp; <b>Rank:</b> ${rank}</p></div><p>`;
+      idInfo += `&emsp;&emsp; <b>Rank:</b> ${item[`rank`]}</p></div><p>`;
       // Metadata update (v2.0)
       if ('episode' in item) {
         const linkName = truncateText(`${item[`episode`]}`, 48);

@@ -31,8 +31,16 @@
         <label for="clipInput"></label>
         <input class="button" type="text" maxlength="4"
                oninput="value=value.replace(/[^0-9]/g,'');"
-               placeholder='Clip duration' id="clipInput">
+               placeholder='Clip length' id="clipInput">
         <div class="units" style="text-align: right;"> sec </div>
+      </div>
+      <div class="clipBox">
+        <label for="sizeInput"></label>
+        <input class="button" type="text" maxlength="2" style="text-align: center;"
+               oninput="value=value.replace(/[^0-9]/g,'');"
+               placeholder='10&emsp;' id="sizeInput">
+        <div class="names" style="text-align: left;"> Top </div>
+        <div class="units" style="text-align: right;"> audio </div>
       </div>
       <label class="select" for="selector">
       <select id="selector" required="required" title="Select search method">

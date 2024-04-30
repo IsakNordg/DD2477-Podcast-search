@@ -50,6 +50,7 @@ class Searcher:
             kwargs: Other parameters or options for the search (optional).
                 'seconds' (int): The number of seconds to search for podcasts.
                 'method' (int): The method ID to search for podcasts.
+                'size' (int): The maximum number of podcasts to return.
 
         Returns:
             dict: The search results returned by Elasticsearch.
@@ -59,6 +60,7 @@ class Searcher:
         # Extract seconds and method from kwargs if provided
         seconds = kwargs.get('seconds', configs["default_clip_sec"])  # Default value is 120 if not provided
         method_id = kwargs.get('method', 0)  # Default value is id=0 if not provided
+        size = kwargs.get('size', 10)  # Default value is top 10 if not provided
 
         # Begin a try block to handle potential exceptions during execution
         try:
@@ -72,7 +74,7 @@ class Searcher:
             }
 
             # Execute the Elasticsearch with defined query
-            response = self.es.search(index=index, body=es_query)
+            response = self.es.search(index=index, body=es_query, size=size)
 
             # Initialize an empty list to store relevant segments
             segments = []

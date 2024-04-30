@@ -32,11 +32,12 @@ def search_example(query, method=0):
     print("Result: " + str(results))
     return results
 
-def search_podcast(query, method=0, sec=120):
+def search_podcast(query, method=0, sec=120, size=10):
     es_results = searcher.search_podcasts(index=configs["idx_name"],
                                           query=query,
                                           seconds=sec,
                                           method=method,
+                                          size=size,
                                           )
     # Add audio scraper (v2.0)
     scraper = Scraper()
@@ -45,5 +46,10 @@ def search_podcast(query, method=0, sec=120):
                 'start@': hit['startTime'], 'end@': hit['endTime'],
                 'url': scraper.scrape_audio_url(hit['rss_link'], hit['episode_name']),
                 'episode': hit['episode_name'], 'content': hit['transcript']} for hit in es_results]
+
+    rank = 0  # (v3.1)
+    for hit in results:
+        rank += 1
+        hit.update({"rank": rank})
 
     return results
