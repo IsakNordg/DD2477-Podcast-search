@@ -52,3 +52,20 @@ class TestScraper(unittest.TestCase):
         self.assertEqual(url, "https://anchor.fm/s/f0f2f58/podcast/play/9455788/"
                               "https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F"
                               "2020-0-3%2F41739515-44100-2-bbeda50b3e0d8.m4a")
+
+    def test_scrape_set7(self):
+        # Test v3.0
+        http_link_7 = 'https://anchor.fm/s/d770b5c/podcast/rss'
+        episode_name_7 = 'Stoke Hub Podcast - S1 E3'
+        url = self.scraper.scrape_audio_url(http_link_7, episode_name_7)
+        self.assertEqual(url, "https://anchor.fm/s/d770b5c/podcast/play/4372186/"
+                              "https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F"
+                              "2019-7-26%2F21782782-48000-2-ba4be70269bd9.mp3")
+
+    def test_scrape_set8(self):
+        # Test v3.0
+        http_link_8 = 'https://anchor.fm/s/c69a9a4/podcast/rss'
+        episode_name_8 = "Episode 61 - Who's in Net for the BoA + Mailbag"
+        url = self.scraper.scrape_audio_url(http_link_8, episode_name_8)
+        self.assertEqual(url, "https://sphinx.acast.com/p/open/s/65f334e0eb260e001515653e/e/"
+                              "ca7b5f3f-6ea8-4ec4-9281-9da59f1d3887/media.mp3")
