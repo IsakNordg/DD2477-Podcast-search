@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchResults = JSON.parse(resultsContainer.textContent);
   const itemsPerPage = 10;
   const totalResults = searchResults.length;
-  let currentItems, rank = 0;
+  let currentItems;
   let currentPage = 1;
   let totalPages = Math.ceil(totalResults / itemsPerPage);
 
@@ -64,8 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         timeInfo += `<b>Start:</b> <font face="Arial">${startTime}</font>
         &emsp;&emsp;<b>End at:</b> <font face="Arial">${endAtTime}</font>`;
       }
-      rank += 1;
-      idInfo += `&emsp;&emsp; <b>Rank:</b> ${rank}</p></div><p>`;
+      idInfo += `&emsp;&emsp; <b>Rank:</b> ${item[`rank`]}</p></div><p>`;
       // Metadata update (v2.0)
       if ('episode' in item) {
         const linkName = truncateText(`${item[`episode`]}`, 48);
@@ -73,13 +72,13 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       timeInfo += `</p></div><p>`;
       if ('url' in item) {
-        audioInfo += `<audio id="audioPlayer${rank}" controls style="width: 440px; height: 6%;">
+        audioInfo += `<audio id="audioPlayer${item[`rank`]}" controls style="width: 440px; height: 6%;">
           <source src="${item[`url`]}" type="audio/mpeg">
           &emsp; Your browser does not support the audio element.
         </audio></p><p>`;
       }
       function audioClip(startTime) {
-        const audio = document.getElementById('audioPlayer'.concat(rank));
+        const audio = document.getElementById('audioPlayer'.concat(item[`rank`]));
         if (audio !== null) {
           audio.currentTime = startTime;
         }

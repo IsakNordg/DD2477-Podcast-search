@@ -47,4 +47,9 @@ def search_podcast(query, method=0, sec=120, size=10):
                 'url': scraper.scrape_audio_url(hit['rss_link'], hit['episode_name']),
                 'episode': hit['episode_name'], 'content': hit['transcript']} for hit in es_results]
 
+    rank = 0  # (v3.1)
+    for hit in results:
+        rank += 1
+        hit.update({"rank": rank})
+
     return results
