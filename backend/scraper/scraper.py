@@ -9,6 +9,7 @@ Description: This file contains the Scraper class that provides methods
              the requests lib and parse HTML/XML using BeautifulSoup.
 """
 
+import string
 import requests
 
 from bs4 import BeautifulSoup
@@ -25,6 +26,10 @@ class Scraper:
         self.debug = debug
         self.print = debug_print
 
+    @staticmethod
+    def remove_punctuation(text):
+        return ''.join([ch for ch in text if ch not in string.punctuation])
+
     def scrape_audio_url(self, rss_link, episode_name):
         try:
             page_text = self.__scrape_page(rss_link)
@@ -40,6 +45,10 @@ class Scraper:
             soup = BeautifulSoup(xml_text, 'xml')
             # Find the item that matches the given title
             item = soup.find(lambda t: t.name == 'title' and episode_name in t.text)
+            if item is None:
+                purify = self.remove_punctuation
+                item = soup.find(lambda tag: purify(episode_name) in purify(tag.text)
+                                             and tag.name == 'title')
             # Check if there is a match
             if item is None:
                 if self.print: print("ScrapingError: Given title not found.")
