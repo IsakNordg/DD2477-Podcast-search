@@ -143,7 +143,7 @@ class Searcher:
                                 #       or more reasonable if all are smaller
             }
 
-            response = self.es.search(index="podcast", body=es_query)
+            response = self.es.search(index=configs['idx_name'], body=es_query)
             for hit in response['hits']['hits']:
                 hit_transcript = hit['_source']['transcript']
                 hit_start_seconds = hit['_source']['startTime']
