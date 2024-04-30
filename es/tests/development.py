@@ -14,7 +14,7 @@ indexer = Indexer(client)
 
 # Index podcast data into the "podcast" index.
 # Set "force_indexing" to True to force reindexing.
-indexer.index_podcasts(idx_name=configs['idx_name'], limit=10, force_indexing=False)
+indexer.index_podcasts(idx_name=configs['idx_name'], limit=10, reindexing=False, append=True)
 
 # Create an instance of the Searcher class with the Elasticsearch client.
 searcher = Searcher(client)

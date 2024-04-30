@@ -141,20 +141,20 @@ class Indexer:
             data into (specified in configs).
             kwargs: Additional arguments for indexing.
                 'limit' (int): The maximum number of podcasts to index into.
-                'force_indexing' (bool): Whether to force the indexing of podcasts.
+                'reindexing' (bool): Whether to force the re-indexing of podcasts.
 
         Returns:
             boolean: True if successful, False otherwise.
         """
         # TODO(Simon): Implementation of indexing logic
 
-        # Extract limit and force_indexing from kwargs if provided
+        # Extract limit and reindexing from kwargs if provided
         limit = kwargs.get('limit', configs["idx_limit"])  # Default value is 10 if not provided
         append = kwargs.get('append', True)  # Default value is True if not provided
-        force_indexing = kwargs.get('force_indexing', False)  # Default value is False if not provided
+        reindexing = kwargs.get('reindexing', False)  # Default value is False if not provided
 
         # If the index does exist, and force indexing is avoided
-        if self.client.index_exists(configs['idx_name']) and not (force_indexing or append):
+        if self.client.index_exists(configs['idx_name']) and not (reindexing or append):
             print("Index loaded from elastic search.")
             return True
 
@@ -175,7 +175,7 @@ class Indexer:
                     file_path = os.path.join(root, file)
                     try:
                         if file_name in self.indexSet:
-                            if force_indexing or not append:
+                            if reindexing or not append:
                                 self.read_podcast_transcript(file_name, file_path, idx_name)
                             else:
                                 pass

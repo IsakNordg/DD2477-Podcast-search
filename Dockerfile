@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r es/requirements.txt
 EXPOSE 5000
 
 # Command to run the backend
-CMD ["python", "-m", "meow"]
+CMD ["python", "-m", "meow", "limit=20"]

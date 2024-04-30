@@ -72,7 +72,7 @@ To install and run this project locally, follow these steps:
 
 The program supports the following command-line options:
 
-1. `force_idx`: Set to `true` to force re-indexing of all podcasts (default is `false`).
+1. `reindex`: Set to `true` to force re-indexing of all podcasts (default is `false`).
 2. `append`: Set to `false` to disable indexing new podcasts (default is `true`).
 3. `debug`: Set to `true` to enable debug mode for Flask application (default is `false`).
 4. `limit`: Specify the maximum number of podcasts to index (default is 105360).

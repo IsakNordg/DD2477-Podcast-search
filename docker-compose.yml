@@ -9,7 +9,7 @@ services:
     networks:
       - elastic
     volumes:
-      - ./es/data:/usr/share/es/data
+      - ./es/data:/searchapp/es/data/
     external_links:
       - elasticsearch
 

@@ -11,21 +11,18 @@ from es.config.config import configs
 if __name__ == '__main__':
 
     # Default values for necessary parameters
-    append = True
-    force = False
-    debug = False
-    limit = 105360
-    hosts = "0.0.0.0"
+    reindex, append, debug = False, True, False
+    limit, hosts = 105360, "0.0.0.0"
 
     # Check if command-line arguments are provided
     if len(sys.argv) > 1:
         # Parse command-line arguments
         for arg in sys.argv[1:]:
             key, value = arg.split('=')
-            if key == 'append':
+            if key == 'reindex':
+                reindex = value.lower() != 'false'
+            elif key == 'append':
                 append = value.lower() == 'true'
-            elif key == 'force_idx':
-                force = value.lower() != 'false'
             elif key == 'debug':
                 debug = value.lower() != 'false'
             elif key == 'limit':
@@ -37,6 +34,6 @@ if __name__ == '__main__':
     indexer = Indexer()
 
     # Index podcasts with the specified parameters
-    indexer.index_podcasts(idx_name=configs['idx_name'], limit=limit, force_indexing=force, append=append)
+    indexer.index_podcasts(idx_name=configs['idx_name'], limit=limit, reindexing=reindex, append=append)
 
     webapp.run(host=hosts, debug=debug, use_reloader=False)
