@@ -59,8 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if ('score' in item)
         idInfo += `&emsp;&emsp; <b>Score:</b> ${item['score']}`;
       if ('start@' in item && 'end@' in item) {
-        timeInfo += `<b>Start:</b> ${item[`start@`]}s
-        &emsp;&emsp;<b>End at:</b> ${item[`end@`]}s`;
+        const startTime = new Date(item[`start@`] * 1000).toISOString().slice(11, 19);
+        const endAtTime = new Date(item[`end@`] * 1000).toISOString().slice(11, 19);
+        timeInfo += `<b>Start:</b> <font face="Arial">${startTime}</font>
+        &emsp;&emsp;<b>End at:</b> <font face="Arial">${endAtTime}</font>`;
       }
       rank += 1;
       idInfo += `&emsp;&emsp; <b>Rank:</b> ${rank}</p></div><p>`;
